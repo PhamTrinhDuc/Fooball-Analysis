@@ -8,10 +8,6 @@ __pycache__/
 # data
 video
 
-# log
-error
-terminal
-
 # training
 results
 weight
@@ -19,7 +15,6 @@ weight
 # logs
 terminal
 error
-data
 
 # Distribution / packaging
 .Python
