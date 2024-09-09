@@ -96,6 +96,7 @@ class Tracker:
     
     def draw_ellipse(self,frame: np.array, bbox: List[float], color: Tuple[int, int, int], track_id: int = None) -> np.array:
         """
+        vẽ các hình ellipse lên các cầu thủ của từng frame
         Args:
             frame: (np.array, shape=(H, W, 3)) frame to draw on 
             color: (Tuple[int, int, int]) color of the ellipse
@@ -152,6 +153,7 @@ class Tracker:
     
     def draw_triangle(self,frame: np.array, bbox: List[float], color: Tuple[int, int, int]) -> np.array:
         """
+        Vẽ hình tam giác lên các object của từng frame
         Args:
             frame: (np.array, shape=(H, W, 3)) frame to draw on 
             color: (Tuple[int, int, int]) color of the triangle
@@ -174,6 +176,7 @@ class Tracker:
     
     def draw_annotations(self, video_frames: List[np.array], tracks, team_ball_control: List[int]) -> List[np.array]:
         """
+        Vẽ các annotations lên các frame
         Args:
             tracks: (Dict[str, List[Dict[int, Dict[str, List[float]]]]) dictionary containing tracks of players, referees and balls
             frames: (List[np.array, shape=(H, W, 3)]) list of frames to draw on
@@ -214,6 +217,7 @@ class Tracker:
     
     def interpolate_ball_positions(self, ball_positions: List[Dict[int, Dict[str, List[float]]]]) -> List[Dict[int, Dict[str, List[float]]]]:
         """
+            Điền các vị trí bóng bị thiếu trong danh sách các vị trí bóng
             Args:
                 ball_positions: (List[Dict[int, Dict[str, List[float]]]]) list of ball positions
             Returns:
@@ -281,22 +285,34 @@ class Tracker:
         return frame
     
     def add_possition_to_tracks(self, tracks):
+        """
+        Thêm vị trí của tương ứng với từng frame vào tracks. 
+        Đối với bóng thì vị trí là trung tâm của bounding box, đối với cầu thủ thì vị trí ở giữa là chân dưới cùng của bounding box
+        Args:
+            tracks: (Dict[str, List[Dict[int, Dict[str, List[float]]]]) dictionary containing tracks of players, referees and balls
+        """
         for object, object_track in tracks.items():
             for frame_num, frame in enumerate(object_track):
                 for track_id, track_info in frame.items():
                     bbox = track_info['bbox']
                     if object == 'ball':
                         possition = get_center(bbox)
-                        tracks[object][frame_num][track_id]['possition'] = possition
+                        tracks[object][frame_num][track_id]['position'] = possition
                     else:
                         possition_foot = get_position_foot(bbox)
-                        tracks[object][frame_num][track_id]['possition'] = possition_foot
+                        tracks[object][frame_num][track_id]['position'] = possition_foot
 
     def adjust_position_to_tracks(self, tracks, camera_movement_per_frame: List[List[int]]):
+        """
+        Điều chỉnh vị trí của các đối tượng trong dữ liệu theo dõi dựa trên chuyển động của camera.
+        Phương thức này điều chỉnh vị trí của tất cả các đối tượng được theo dõi trong mỗi khung hình,
+        tính đến sự chuyển động của camera. Nó tạo ra một vị trí mới đã được điều chỉnh cho mỗi đối tượng
+        bằng cách trừ đi chuyển động của camera từ vị trí gốc.
+        """
         for object, object_track in tracks.items():
             for frame_num, frame in enumerate(object_track):
                 for track_id, track_info in frame.items():
-                    possition = track_info['possition']
+                    position = track_info['position']
                     camera_movement = camera_movement_per_frame[frame_num]
-                    possition_adjusted = (possition[0] - camera_movement[0], possition[1] - camera_movement[1])
-                    tracks[object][frame_num][track_id]['possition_adjusted'] = possition_adjusted
+                    position_adjusted = (position[0] - camera_movement[0], position[1] - camera_movement[1])
+                    tracks[object][frame_num][track_id]['position_adjusted'] = position_adjusted
