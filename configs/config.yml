@@ -1,0 +1,6 @@
+directories:
+  path_weight_yolo: training/weight/best.pt
+  input_video_path: data/video/input/sample.mp4
+  output_video_path: data/video/output/sample_output.mp4
+  frames_path: data/frames/track_frames.pkl
+  camera_movement_path: data/camera_movement/camera_movement.pkl
