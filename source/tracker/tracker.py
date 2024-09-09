@@ -291,3 +291,12 @@ class Tracker:
                     else:
                         possition_foot = get_position_foot(bbox)
                         tracks[object][frame_num][track_id]['possition'] = possition_foot
+
+    def adjust_position_to_tracks(self, tracks, camera_movement_per_frame: List[List[int]]):
+        for object, object_track in tracks.items():
+            for frame_num, frame in enumerate(object_track):
+                for track_id, track_info in frame.items():
+                    possition = track_info['possition']
+                    camera_movement = camera_movement_per_frame[frame_num]
+                    possition_adjusted = (possition[0] - camera_movement[0], possition[1] - camera_movement[1])
+                    tracks[object][frame_num][track_id]['possition_adjusted'] = possition_adjusted

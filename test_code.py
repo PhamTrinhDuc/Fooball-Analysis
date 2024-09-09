@@ -19,6 +19,9 @@ def main():
     # # Draw camera movement
     camera_movement_estimator = CameraMovementEstimator(video_frames[0])
     camera_movement_per_frame = camera_movement_estimator.get_camera_movement(video_frames)
+
+    # Add adjust possition to tracks
+    tracker.adjust_position_to_tracks(tracks, camera_movement_per_frame)
     
     # Interpolate Ball Positions
     tracks['ball'] = tracker.interpolate_ball_positions(tracks['ball'])
