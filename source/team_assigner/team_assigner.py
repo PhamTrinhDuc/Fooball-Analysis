@@ -5,12 +5,22 @@ from typing import List, Tuple, Dict
 
 class TeamAssigner:
     def __init__(self):
+        """
+        Lớp này được sử dụng để gán màu sắc và đội cho các cầu thủ trong một khung hình video.
+
+        Attributes:
+            team_colors (Dict): Lưu trữ màu sắc của mỗi đội.
+            player_team_dict (Dict): Lưu trữ đội của mỗi cầu thủ.
+    """
         self.team_colors = {}
         self.player_team_dict = {}
 
 
     def get_clustering_model(self, image: np.array) -> KMeans:
+        
         """
+        Tạo và huấn luyện một mô hình phân cụm KMeans trên một hình ảnh.
+
         Args:
             image: (np.array, shape=(H, W, 3)) image to cluster
         Returns:
@@ -23,6 +33,8 @@ class TeamAssigner:
     
     def get_player_color(self, frame: np.array, bbox: List[float]) -> Tuple[float, float, float]:
         """
+        Xác định màu sắc của cầu thủ dựa trên phần trên của bounding box.
+
         Args:
             frame: (np.array, shape=(H, W, 3)) frame containing the player
             bbox: (List[float], len(bbox) == 4) bounding box of the player
@@ -45,6 +57,17 @@ class TeamAssigner:
         return player_color
     
     def assign_team_color(self, frame: np.array, player_detections: Dict[str, List[float]]):
+        """
+        Gán màu sắc cho mỗi đội dựa trên màu sắc của tất cả các cầu thủ.
+
+        Args:
+            frame (np.array): Khung hình chứa các cầu thủ, có shape (H, W, 3).
+            player_detections (Dict[str, List[float]]): Từ điển chứa thông tin bounding box của mỗi cầu thủ.
+
+        Note:
+            Phương thức này cập nhật thuộc tính team_colors và lưu mô hình kmeans.
+        """
+        
         player_colors = []
 
         for player_id, player_detection in player_detections.items():
@@ -60,6 +83,22 @@ class TeamAssigner:
         self.team_colors[2] = kmeans.cluster_centers_[1]
     
     def get_player_team(self, frame: np.array, player_id: int, player_bbox: List[float]) -> int:
+        """
+        Xác định đội của một cầu thủ dựa trên màu sắc của họ.
+
+        Args:
+            frame (np.array): Khung hình chứa cầu thủ, có shape (H, W, 3).
+            player_id (int): ID của cầu thủ.
+            player_bbox (List[float]): Bounding box của cầu thủ [x, y, width, height].
+
+        Returns:
+            int: ID của đội (1 hoặc 2).
+
+        Note:
+            Phương thức này cập nhật thuộc tính player_team_dict.
+            Cầu thủ có ID 91 luôn được gán cho đội 1.
+        """
+
         if player_id in self.player_team_dict:
             return self.player_team_dict[player_id]
 
@@ -68,7 +107,7 @@ class TeamAssigner:
         team_id = self.kmeans.predict(player_color.reshape(1, -1))[0]
         team_id += 1
 
-        if player_id == 91:
+        if player_id == 100: # thu mon
             team_id = 1
         
         self.player_team_dict[player_id] = team_id
