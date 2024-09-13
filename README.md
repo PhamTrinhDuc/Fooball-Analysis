@@ -6,12 +6,12 @@
 
 ## 2. Hướng dẫn
 
-### Cây thư mục:
+### 2.1 Cây thư mục:
 
-### 2.1 Cài file requirement.txt
+### 2.2 Cài file requirement.txt
     pip install -r requirements.txt
     
-### 2.2 Run file main.py
+### 2.3 Run file main.py
     python3 main.py
     
-### 2.3 Kết quả được lưu ở folder: data/video/output
+### 2.4 Kết quả được lưu ở folder: data/video/output
